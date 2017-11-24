@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.image.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<VBox fx:id="body" alignment="CENTER" style="-fx-background-color: white;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sims.chareyron.plateviewer.javafx.view.accueil.AccueilView">
+   <children>
+      <VBox alignment="TOP_CENTER">
+         <children>
+            <GridPane alignment="CENTER">
+               <children>
+                  <Label alignment="CENTER" contentDisplay="CENTER" text="Plate Viewer Application" textAlignment="CENTER">
+                     <font>
+                        <Font name="System Bold" size="27.0" />
+                     </font>
+                  </Label>
+                  <ImageView fitHeight="368.0" fitWidth="523.0" pickOnBounds="true" preserveRatio="true" GridPane.rowIndex="1">
+                     <image>
+                        <Image url="@../loader/plate-viewer.jpg" />
+                     </image>
+                  </ImageView>
+               </children>
+               <columnConstraints>
+                  <ColumnConstraints halignment="CENTER" hgrow="ALWAYS" />
+               </columnConstraints>
+               <rowConstraints>
+                  <RowConstraints minHeight="-Infinity" percentHeight="20.0" valignment="CENTER" vgrow="ALWAYS" />
+                  <RowConstraints minHeight="10.0" percentHeight="90.0" valignment="CENTER" vgrow="ALWAYS" />
+               </rowConstraints>
+            </GridPane>
+         </children>
+      </VBox>
+   </children>
+</VBox>

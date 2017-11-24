@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.BorderPane?>
+
+<VBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" style="-fx-background-color: white;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sims.chareyron.plateviewer.javafx.view.loader.SplashScreen">
+   <children>
+      <ImageView fitHeight="274.0" fitWidth="497.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@plate-viewer.jpg" />
+         </image>
+      </ImageView>
+      <Label style="-fx-background-color: white;" text="Plate viewer loading...">
+         <font>
+            <Font size="21.0" />
+         </font>
+         <padding>
+            <Insets bottom="5.0" top="5.0" />
+         </padding>
+      </Label>
+   </children>
+   <padding>
+      <Insets bottom="5.0" left="20.0" right="20.0" top="5.0" />
+   </padding>
+</VBox>
