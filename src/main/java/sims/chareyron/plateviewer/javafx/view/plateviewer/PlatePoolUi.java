@@ -45,7 +45,8 @@ public class PlatePoolUi extends GridPane {
 	private Label labelToUpdate;
 
 	enum Column {
-		COLOR("Color", 0), STRAIN("Strain", 1), SEX("Sex", 2), BIRTHDAY("Birthday", 3), AGE("Age", 4);
+		COLOR("Color", 0), STRAIN("Strain", 1), SEX("Sex", 3), ID("Mouse ID", 2), BIRTHDAY("Birthday", 4), AGE("Age",
+				5);
 		public String title;
 		public int index;
 
@@ -80,24 +81,27 @@ public class PlatePoolUi extends GridPane {
 		firstCol.setPercentWidth(20);
 		firstCol.setHalignment(HPos.CENTER);
 		final ColumnConstraints strainCol = new ColumnConstraints();
-		strainCol.setPercentWidth(25);
+		strainCol.setPercentWidth(20);
 		strainCol.setHalignment(HPos.CENTER);
 		final ColumnConstraints sexeCol = new ColumnConstraints();
-		sexeCol.setPercentWidth(15);
+		sexeCol.setPercentWidth(10);
 		sexeCol.setHalignment(HPos.CENTER);
 		final ColumnConstraints birthDayCol = new ColumnConstraints();
-		birthDayCol.setPercentWidth(25);
+		birthDayCol.setPercentWidth(20);
 		birthDayCol.setHalignment(HPos.CENTER);
 		final ColumnConstraints ageCol = new ColumnConstraints();
-		ageCol.setPercentWidth(10);
+		ageCol.setPercentWidth(15);
 		ageCol.setHalignment(HPos.CENTER);
+		final ColumnConstraints mouseIdColumn = new ColumnConstraints();
+		mouseIdColumn.setPercentWidth(10);
+		mouseIdColumn.setHalignment(HPos.CENTER);
 
 		getColumnConstraints().clear();
-		getColumnConstraints().addAll(firstCol, strainCol, sexeCol, birthDayCol, ageCol);
+		getColumnConstraints().addAll(firstCol, strainCol, mouseIdColumn, sexeCol, birthDayCol, ageCol);
 	}
 
 	private void buildColumnHeaders(final AtomicInteger rawIndex, final AtomicInteger columnIndex) {
-		add(wrap(new Label("Pools"), Color.LIGHTGRAY, Pos.CENTER, true, true), columnIndex.get(), rawIndex.get(), 5, 1);
+		add(wrap(new Label("Pools"), Color.LIGHTGRAY, Pos.CENTER, true, true), columnIndex.get(), rawIndex.get(), 6, 1);
 		// add row title
 		rawIndex.incrementAndGet();
 		Arrays.stream(Column.values())
@@ -124,6 +128,7 @@ public class PlatePoolUi extends GridPane {
 
 	private void feedMiceLine(final AtomicInteger rawIndex, final Animal mice) {
 		add(wrap(mice.getStrain().getStrain(), Color.WHITE, Pos.CENTER), Column.STRAIN.index, rawIndex.get());
+		add(wrap(mice.getId(), Color.WHITE, Pos.CENTER), Column.ID.index, rawIndex.get());
 		add(wrap(FORMATTER_DATE_BIRTHDAY.format(mice.getBirthday()), Color.WHITE, Pos.CENTER), Column.BIRTHDAY.index,
 				rawIndex.get());
 		add(wrap(mice.getAge(), Color.WHITE, Pos.CENTER), Column.AGE.index, rawIndex.get());

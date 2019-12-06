@@ -17,9 +17,9 @@
             </MenuBar>
             <MenuBar fx:id="menuBar" HBox.hgrow="ALWAYS">
               <menus>
-                <Menu mnemonicParsing="false" text="File">
+                <Menu fx:id="fileMenu" mnemonicParsing="false" text="File">
                      <items>
-                        <MenuItem mnemonicParsing="false" onAction="#onLoadFileMenuClicked" text="Load experiment CSV file" />
+                        <MenuItem fx:id="loadFileMenu" mnemonicParsing="false" onAction="#onLoadFileMenuClicked" text="Load experiment CSV file" />
                      </items></Menu>
               </menus>
             </MenuBar>

@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import javafx.geometry.Rectangle2D;
@@ -19,9 +20,10 @@ public class PlaceManagerImpl implements PlaceManager {
 
 	public Stage stage;
 	@SuppressWarnings("rawtypes")
-	private Map<Presenter, Boolean> boundPresentersMap = new HashMap<>();
+	private final Map<Presenter, Boolean> boundPresentersMap = new HashMap<>();
 	private Presenter<? extends View> currentPresenter;
 	@Autowired
+	@Lazy
 	private List<Presenter<? extends View>> presenters;
 	private boolean sceneBuilt = false;
 
@@ -32,7 +34,7 @@ public class PlaceManagerImpl implements PlaceManager {
 		stage.centerOnScreen();
 		stage.minHeightProperty().set(800);
 		stage.minWidthProperty().set(1200);
-		Rectangle2D primaryScreenBounds = Screen.getPrimary().getVisualBounds();
+		final Rectangle2D primaryScreenBounds = Screen.getPrimary().getVisualBounds();
 		stage.setWidth(primaryScreenBounds.getWidth());
 		stage.setHeight(primaryScreenBounds.getHeight());
 		stage.initStyle(StageStyle.UNIFIED);
@@ -41,9 +43,9 @@ public class PlaceManagerImpl implements PlaceManager {
 	}
 
 	@Override
-	public void revealPlace(String token) {
+	public void revealPlace(final String token) {
 
-		Presenter<? extends View> presenterWithToken = presenters.parallelStream()
+		final Presenter<? extends View> presenterWithToken = presenters.parallelStream()
 				.filter(p -> p.getToken() != null && p.getToken().equals(token)).findFirst().get();
 		Presenter<?> parentPresenter = null;
 		if (!presenterWithToken.isBound()) {
@@ -58,14 +60,14 @@ public class PlaceManagerImpl implements PlaceManager {
 
 	}
 
-	private Presenter<?> onReveal(Presenter<? extends View> presenterToReveal) {
+	private Presenter<?> onReveal(final Presenter<? extends View> presenterToReveal) {
 
 		// appeler on reveal sur tous ses enfants
 		presenterToReveal.childrenPresenter().forEach(p -> p.reveal());
 		// reveler dans le parent
-		Slot revealedInSlot = presenterToReveal.revealedInSlot();
+		final Slot revealedInSlot = presenterToReveal.revealedInSlot();
 		// trouver ou se trouve le slot
-		Presenter<?> parentPresenter = presenters.stream().filter(p -> {
+		final Presenter<?> parentPresenter = presenters.stream().filter(p -> {
 			return p.getSlotList().contains(revealedInSlot);
 		}).findFirst().get();
 		// initialiser la vue java FX
@@ -80,13 +82,13 @@ public class PlaceManagerImpl implements PlaceManager {
 
 	}
 
-	private Presenter<?> onBind(Presenter<? extends View> presenterToBind) {
+	private Presenter<?> onBind(final Presenter<? extends View> presenterToBind) {
 		boundPresentersMap.put(presenterToBind, true);
 
 		// reveler dans le parent
-		Slot revealedInSlot = presenterToBind.revealedInSlot();
+		final Slot revealedInSlot = presenterToBind.revealedInSlot();
 		// trouver ou se trouve le slot
-		Presenter<?> parentPresenter = presenters.stream().filter(p -> {
+		final Presenter<?> parentPresenter = presenters.stream().filter(p -> {
 			return p.getSlotList().contains(revealedInSlot);
 		}).findFirst().get();
 		((AbstractFxmlView) parentPresenter.getView()).getParent();
@@ -125,9 +127,9 @@ public class PlaceManagerImpl implements PlaceManager {
 
 	}
 
-	private void revealInScene(Presenter<? extends View> defaultPresenter) {
+	private void revealInScene(final Presenter<? extends View> defaultPresenter) {
 		if (!sceneBuilt) {
-			Scene scene = new Scene(defaultPresenter.getView().getParent());
+			final Scene scene = new Scene(defaultPresenter.getView().getParent());
 			defaultPresenter.reveal();
 			stage.setScene(scene);
 			sceneBuilt = true;
@@ -140,7 +142,7 @@ public class PlaceManagerImpl implements PlaceManager {
 	}
 
 	@Override
-	public void setStage(Stage stage) {
+	public void setStage(final Stage stage) {
 		this.stage = stage;
 
 	}

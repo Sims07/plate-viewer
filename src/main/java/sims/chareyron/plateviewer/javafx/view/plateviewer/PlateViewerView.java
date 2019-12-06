@@ -12,6 +12,9 @@ import java.util.function.Consumer;
 import javax.imageio.ImageIO;
 
 import org.controlsfx.dialog.FontSelectorDialog;
+import org.controlsfx.glyphfont.FontAwesome.Glyph;
+import org.controlsfx.glyphfont.GlyphFont;
+import org.controlsfx.glyphfont.GlyphFontRegistry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -26,6 +29,7 @@ import javafx.geometry.Insets;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Slider;
@@ -54,6 +58,7 @@ public class PlateViewerView extends AbstractViewWithUiHandlers<PlateViewerUiHan
 	private static final int PADDING_PLATE = 10;
 	private static final double ZOOM_INT_VALUE = 50.0;
 	private static final int LEFT_MENU_WIDTH = 40;
+	private static final GlyphFont fontAwesome = GlyphFontRegistry.font("FontAwesome");
 	@FXML
 	VBox plateContainer;
 	@FXML
@@ -70,6 +75,8 @@ public class PlateViewerView extends AbstractViewWithUiHandlers<PlateViewerUiHan
 	ScrollPane scrollPaneBody;
 	@FXML
 	Slider slider;
+	@FXML
+	Button editTreatmentButton, editSampleButton, printButton;
 
 	PlatePreferenceUI platePref;
 	DirectoryChooser outputExport;
@@ -119,6 +126,7 @@ public class PlateViewerView extends AbstractViewWithUiHandlers<PlateViewerUiHan
 
 	@Override
 	public void setViewBindings(final Stage stage) {
+		addFontIconToButtons();
 		setZoom(ZOOM_INT_VALUE);
 
 		fontTTproperty.set(selectedFont);
@@ -134,6 +142,13 @@ public class PlateViewerView extends AbstractViewWithUiHandlers<PlateViewerUiHan
 					setZoom((Double) new_val);
 					refreshExperiment();
 				});
+	}
+
+	private void addFontIconToButtons() {
+
+		editTreatmentButton.setGraphic(fontAwesome.create(Glyph.CALCULATOR));
+		editSampleButton.setGraphic(fontAwesome.create(Glyph.BUG));
+		printButton.setGraphic(fontAwesome.create(Glyph.PRINT));
 	}
 
 	public void refreshExperiment() {

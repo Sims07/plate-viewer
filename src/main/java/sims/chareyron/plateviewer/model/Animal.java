@@ -19,8 +19,10 @@ public class Animal extends AbstractModel {
 	private Strain strain;
 	private final List<Sample> eluateSamples;
 
-	public Animal(Date birthday, String species, String name, String bw, String bl, String description, String sex,
-			String age) {
+	private final String id;
+
+	public Animal(final Date birthday, final String species, final String name, final String bw, final String bl,
+			final String description, final String sex, final String age, final String id) {
 		super();
 		this.birthday = birthday;
 		this.species = species;
@@ -31,13 +33,14 @@ public class Animal extends AbstractModel {
 		this.sex = sex;
 		this.eluateSamples = new ArrayList<>();
 		this.age = age;
+		this.id = id;
 	}
 
 	public Strain getStrain() {
 		return strain;
 	}
 
-	public void setStrain(Strain strain) {
+	public void setStrain(final Strain strain) {
 		this.strain = strain;
 	}
 
@@ -53,7 +56,7 @@ public class Animal extends AbstractModel {
 		return cage;
 	}
 
-	public void setCage(Cage cage) {
+	public void setCage(final Cage cage) {
 		this.cage = cage;
 	}
 
@@ -77,7 +80,7 @@ public class Animal extends AbstractModel {
 		return sex;
 	}
 
-	public void addSample(Sample sample) {
+	public void addSample(final Sample sample) {
 		this.eluateSamples.add(sample);
 	}
 
@@ -98,7 +101,7 @@ public class Animal extends AbstractModel {
 				+ (notNull(strain) ? "strain : " + strain.getStrain() : " ");
 	}
 
-	private boolean notNull(Object birthday2) {
+	private boolean notNull(final Object birthday2) {
 		return birthday2 != null && !"_".equals(birthday2.toString().trim());
 	}
 
@@ -123,20 +126,24 @@ public class Animal extends AbstractModel {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
+	public boolean equals(final Object obj) {
 		if (this == obj)
 			return true;
 		if (obj == null)
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		Animal other = (Animal) obj;
+		final Animal other = (Animal) obj;
 		if (name == null) {
 			if (other.name != null)
 				return false;
 		} else if (!name.equals(other.name))
 			return false;
 		return true;
+	}
+
+	public String getId() {
+		return id;
 	}
 
 }

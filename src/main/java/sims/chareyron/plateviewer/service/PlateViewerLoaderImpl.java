@@ -48,41 +48,41 @@ public class PlateViewerLoaderImpl implements PlateViewerLoader {
 	private Experiment currentExperiment;
 
 	@Override
-	public Experiment loadExperiment(File csvInput) throws IOException, PlateLoadingException {
-		String xpFileContent = FileUtils.readFileToString(csvInput, "Cp1252");
-		String[] lines = xpFileContent.split("\\R");
+	public Experiment loadExperiment(final File csvInput) throws IOException, PlateLoadingException {
+		final String xpFileContent = FileUtils.readFileToString(csvInput, "Cp1252");
+		final String[] lines = xpFileContent.split("\\R");
 
 		// extract experiment info
-		Experiment xp = new Experiment(extractValue(lines, csvInfoLocator.getXpTitle()),
+		final Experiment xp = new Experiment(extractValue(lines, csvInfoLocator.getXpTitle()),
 				extractValue(lines, csvInfoLocator.getXpDescription()), extractDate(lines, csvInfoLocator.getXpDate()));
 
 		// find animal index
-		int speciesIndex = extractIndex(lines, 1, ANIMAL) + 1;
-		String speciesValue = extractValue(lines, new Point(1, speciesIndex));
+		final int speciesIndex = extractIndex(lines, 1, ANIMAL) + 1;
+		final String speciesValue = extractValue(lines, new Point(1, speciesIndex));
 
 		// search list of this species of animal
-		int speciesValueIndex = extractIndex(lines, speciesIndex, speciesValue);
-		List<Animal> animals = extractAnimals(speciesValueIndex, speciesValue, lines);
+		final int speciesValueIndex = extractIndex(lines, speciesIndex, speciesValue);
+		final List<Animal> animals = extractAnimals(speciesValueIndex, speciesValue, lines);
 		animals.stream().forEach(animal -> animalsMap.put(animal.getName(), animal));
 		xp.addAll(animals);
 
 		// get plates
-		List<Plate> plates = extractPlates(lines);
+		final List<Plate> plates = extractPlates(lines);
 		xp.setPlates(plates);
 		this.currentExperiment = xp;
 		return xp;
 	}
 
-	private List<Plate> extractPlates(String[] linesCsv) throws PlateLoadingException {
-		List<Plate> resPlates = new ArrayList<>();
+	private List<Plate> extractPlates(final String[] linesCsv) throws PlateLoadingException {
+		final List<Plate> resPlates = new ArrayList<>();
 
-		long nbPlates = Arrays.asList(linesCsv).stream().filter(line -> {
+		final long nbPlates = Arrays.asList(linesCsv).parallelStream().filter(line -> {
 			return line.contains(PLATE);
 		}).count();
 		logger.info("Get {} plates", nbPlates);
 		int nextPLateIndex = 0;
 		for (int i = 0; i < nbPlates; i++) {
-			int plateIndex = extractIndex(linesCsv, nextPLateIndex, PLATE);
+			final int plateIndex = extractIndex(linesCsv, nextPLateIndex, PLATE);
 			resPlates.add(extractPlate(linesCsv, plateIndex));
 			nextPLateIndex = plateIndex + 1;
 		}
@@ -98,10 +98,11 @@ public class PlateViewerLoaderImpl implements PlateViewerLoader {
 	 * @throws PlateLoadingException
 	 * @throws NumberFormatException
 	 */
-	private Plate extractPlate(String[] linesCsv, int plateIndex) throws NumberFormatException, PlateLoadingException {
+	private Plate extractPlate(final String[] linesCsv, final int plateIndex)
+			throws NumberFormatException, PlateLoadingException {
 		// plateIndex pointe sur le titre Plate
-		String name = linesCsv[plateIndex + 1].split(SEPARATOR_CHAR)[1];
-		Plate plate = new Plate(name);
+		final String name = linesCsv[plateIndex + 1].split(SEPARATOR_CHAR)[1];
+		final Plate plate = new Plate(name);
 		int indexCurrentWell = plateIndex + 3;
 		do {
 			plate.addWell(extractWell(linesCsv[indexCurrentWell], plate));
@@ -119,11 +120,12 @@ public class PlateViewerLoaderImpl implements PlateViewerLoader {
 	 * @throws PlateLoadingException
 	 * @throws NumberFormatException
 	 */
-	private Well extractWell(String lineWell, Plate plate) throws NumberFormatException, PlateLoadingException {
+	private Well extractWell(final String lineWell, final Plate plate)
+			throws NumberFormatException, PlateLoadingException {
 		Well well = null;
 		try {
-			String extractValue = extractValue(lineWell, 0);
-			Integer wellIndex = Integer.valueOf(extractValue);
+			final String extractValue = extractValue(lineWell, 0);
+			final Integer wellIndex = Integer.valueOf(extractValue);
 			logger.info("Load well {}", wellIndex);
 			if (lineWell.split(SEPARATOR_CHAR).length > 2) {
 				well = new Well(wellIndex, Double.valueOf(extractValue(lineWell, 3)), plate,
@@ -131,7 +133,7 @@ public class PlateViewerLoaderImpl implements PlateViewerLoader {
 			} else {
 				well = new Well(wellIndex);
 			}
-		} catch (NumberFormatException ne) {
+		} catch (final NumberFormatException ne) {
 			throw new PlateLoadingException("Decimal format must used '.'.\n\n-Value:" + extractValue(lineWell, 3)
 					+ "\n\n-Locale:" + Locale.getDefault());
 		}
@@ -145,22 +147,22 @@ public class PlateViewerLoaderImpl implements PlateViewerLoader {
 	 * @return
 	 * @throws PlateLoadingException
 	 */
-	private List<Sample> extractSamples(String lineWell) throws PlateLoadingException {
-		List<Sample> res = new ArrayList<>();
+	private List<Sample> extractSamples(final String lineWell) throws PlateLoadingException {
+		final List<Sample> res = new ArrayList<>();
 		String sampleId;
 		try {
 			sampleId = extractValue(lineWell, 1);
-		} catch (PlateLoadingException e) {
+		} catch (final PlateLoadingException e) {
 			throw new PlateLoadingException("Sample id is missing.\n\n" + e.getMessage());
 		}
 		String samples;
 		try {
 			samples = extractValue(lineWell, 2);
-		} catch (PlateLoadingException e) {
+		} catch (final PlateLoadingException e) {
 			throw new PlateLoadingException("Sample is missing.\n\n" + e.getMessage());
 		}
 		logger.info("Extract samples from {}", samples);
-		Sample sample = new Sample(sampleId);
+		final Sample sample = new Sample(sampleId);
 		res.add(sample);
 		Arrays.asList(samples.split(CONTENT_SEPARATOR)).forEach(animal -> sample.addInpuAnimal(animalsMap.get(animal)));
 		return res;
@@ -173,23 +175,23 @@ public class PlateViewerLoaderImpl implements PlateViewerLoader {
 	 * @return
 	 * @throws PlateLoadingException
 	 */
-	private List<Traitement> extractTraitements(String lineWell) throws PlateLoadingException {
-		List<Traitement> tts = new ArrayList<>();
+	private List<Traitement> extractTraitements(final String lineWell) throws PlateLoadingException {
+		final List<Traitement> tts = new ArrayList<>();
 
-		int nbTraitement = (lineWell.split(SEPARATOR_CHAR).length - 4) / 2;
+		final int nbTraitement = (lineWell.split(SEPARATOR_CHAR).length - 4) / 2;
 		logger.info("Nb traitement to get: {} from {}", nbTraitement, lineWell);
 		int currentTtindex = 4;
 		int currentTtLotindex = 5;
 		for (int i = 0; i < nbTraitement; i++) {
-			String ttFlatInfo = extractValue(lineWell, currentTtindex);
+			final String ttFlatInfo = extractValue(lineWell, currentTtindex);
 			if (!CONTENT_SEPARATOR.equals(ttFlatInfo)) {
-				String ttLotFlatInfo = extractValue(lineWell, currentTtLotindex);
-				String[] ttFlatInfoArray = ttFlatInfo.split(CONTENT_SEPARATOR);
+				final String ttLotFlatInfo = extractValue(lineWell, currentTtLotindex);
+				final String[] ttFlatInfoArray = ttFlatInfo.split(CONTENT_SEPARATOR);
 				try {
-					Traitement tt = new Traitement(extract(ttFlatInfoArray, 0), extract(ttFlatInfoArray, 1),
+					final Traitement tt = new Traitement(extract(ttFlatInfoArray, 0), extract(ttFlatInfoArray, 1),
 							extract(ttFlatInfoArray, 2), extractLot(ttLotFlatInfo));
 					tts.add(tt);
-				} catch (Exception e) {
+				} catch (final Exception e) {
 
 					System.err.println("Treatement could not be loaded");
 					e.printStackTrace();
@@ -204,20 +206,20 @@ public class PlateViewerLoaderImpl implements PlateViewerLoader {
 		return tts;
 	}
 
-	private String extract(String[] ttFlatInfoArray, int i) {
+	private String extract(final String[] ttFlatInfoArray, final int i) {
 		// TODO Auto-generated method stub
 		return ttFlatInfoArray.length > i ? ttFlatInfoArray[i].trim() : "";
 	}
 
-	private Lot extractLot(String ttLotFlatInfo) throws PlateLoadingException {
+	private Lot extractLot(final String ttLotFlatInfo) throws PlateLoadingException {
 		logger.info("Get tt lot from {}", ttLotFlatInfo);
-		String[] ttLotFlatInfoArray = ttLotFlatInfo.split(CONTENT_SEPARATOR);
+		final String[] ttLotFlatInfoArray = ttLotFlatInfo.split(CONTENT_SEPARATOR);
 
 		Date peremptionDate = null;
 		try {
-			String peremptionDateStr = ttLotFlatInfoArray[2];
+			final String peremptionDateStr = ttLotFlatInfoArray[2];
 			peremptionDate = peremptionDateStr != null ? dateFormatter.parse(peremptionDateStr) : null;
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			peremptionDate = new Date(0);
 			// throw new PlateLoadingException("Date format invalid it must
 			// follow the pattern:" + DATE_PATTERN);
@@ -235,12 +237,12 @@ public class PlateViewerLoaderImpl implements PlateViewerLoader {
 	 * @return
 	 * @throws PlateLoadingException
 	 */
-	private List<Animal> extractAnimals(int speciesValueIndex, String speciesValue, String[] lines)
+	private List<Animal> extractAnimals(final int speciesValueIndex, final String speciesValue, final String[] lines)
 			throws PlateLoadingException {
-		List<Animal> animals = new ArrayList<>();
-		int lastIndex = extractFirstEmptyRawIndex(lines, speciesValueIndex);
+		final List<Animal> animals = new ArrayList<>();
+		final int lastIndex = extractFirstEmptyRawIndex(lines, speciesValueIndex);
 
-		List<String> linesList = Arrays.asList(lines).subList(speciesValueIndex + 2, lastIndex);
+		final List<String> linesList = Arrays.asList(lines).subList(speciesValueIndex + 2, lastIndex);
 		try {
 			linesList.forEach(lineAnimal -> {
 				if (StringUtils.isEmpty(lineAnimal.split(SEPARATOR_CHAR)[0])) {
@@ -248,11 +250,11 @@ public class PlateViewerLoaderImpl implements PlateViewerLoader {
 				}
 				try {
 					animals.add(extractAnimal(lineAnimal, speciesValue));
-				} catch (PlateLoadingException e) {
+				} catch (final PlateLoadingException e) {
 					throw new BreakException(e);
 				}
 			});
-		} catch (BreakException be) {
+		} catch (final BreakException be) {
 			logger.info("Animals are loaded");
 			if (be.getCause() != null) {
 				throw new PlateLoadingException(be.getPlEx().getMessage());
@@ -261,11 +263,11 @@ public class PlateViewerLoaderImpl implements PlateViewerLoader {
 		return animals;
 	}
 
-	private int extractFirstEmptyRawIndex(String[] lines, int from) {
+	private int extractFirstEmptyRawIndex(final String[] lines, final int from) {
 		int index = from;
-		boolean found = false;
+		final boolean found = false;
 		while (!found) {
-			String[] checkLine = lines[index].split(SEPARATOR_CHAR);
+			final String[] checkLine = lines[index].split(SEPARATOR_CHAR);
 			if (checkLine.length == 0) {
 				break;
 			} else {
@@ -286,13 +288,13 @@ public class PlateViewerLoaderImpl implements PlateViewerLoader {
 	 * @return
 	 * @throws PlateLoadingException
 	 */
-	private Animal extractAnimal(String lineAnimal, String speciesValue) throws PlateLoadingException {
+	private Animal extractAnimal(final String lineAnimal, final String speciesValue) throws PlateLoadingException {
 		Animal animalExtracted;
 		try {
 			animalExtracted = new Animal(extractDate(lineAnimal, 4), speciesValue, extractValue(lineAnimal, 2),
 					extractValue(lineAnimal, 7), extractValue(lineAnimal, 8), extractValue(lineAnimal, 9),
-					extractValue(lineAnimal, 6), extractValue(lineAnimal, 5));
-		} catch (PlateLoadingException e1) {
+					extractValue(lineAnimal, 5), extractValue(lineAnimal, 9), extractValue(lineAnimal, 3));
+		} catch (final PlateLoadingException e1) {
 			throw new PlateLoadingException("Animal's value is missing.\n\n" + e1.getMessage()
 					+ "\nExpected Values:Strain;Cage;Name;ID;Date of Birth;Age;Sex;BW;BL;Description");
 		}
@@ -300,7 +302,7 @@ public class PlateViewerLoaderImpl implements PlateViewerLoader {
 		Cage cage;
 		try {
 			cage = extractCage(extractValue(lineAnimal, 1));
-		} catch (PlateLoadingException e1) {
+		} catch (final PlateLoadingException e1) {
 			throw new PlateLoadingException("Cage value is missing.\n\n" + e1.getMessage());
 		}
 		cage.addAnimalInCage(animalExtracted);
@@ -309,16 +311,16 @@ public class PlateViewerLoaderImpl implements PlateViewerLoader {
 		Strain strain;
 		try {
 			strain = extractStrain(extractValue(lineAnimal, 0));
-		} catch (PlateLoadingException e) {
+		} catch (final PlateLoadingException e) {
 			throw new PlateLoadingException("Strain value is missing.\n\n" + e.getMessage());
 		}
 		strain.addAnimalInStrain(animalExtracted);
 		return animalExtracted;
 	}
 
-	private Strain extractStrain(String extractValue) {
+	private Strain extractStrain(final String extractValue) {
 		Strain extractedStrain = null;
-		boolean strainExisted = strainsMap.containsKey(extractValue);
+		final boolean strainExisted = strainsMap.containsKey(extractValue);
 		if (strainExisted) {
 			extractedStrain = strainsMap.get(extractValue);
 		} else {
@@ -328,9 +330,9 @@ public class PlateViewerLoaderImpl implements PlateViewerLoader {
 		return extractedStrain;
 	}
 
-	private Cage extractCage(String extractValue) {
+	private Cage extractCage(final String extractValue) {
 		Cage res = null;
-		boolean cageExisted = cagesMap.containsKey(extractValue);
+		final boolean cageExisted = cagesMap.containsKey(extractValue);
 		if (cageExisted) {
 			// add animal in cage
 			res = cagesMap.get(extractValue);
@@ -341,13 +343,13 @@ public class PlateViewerLoaderImpl implements PlateViewerLoader {
 		return res;
 	}
 
-	private String extractValue(String line, int index) throws PlateLoadingException {
+	private String extractValue(final String line, final int index) throws PlateLoadingException {
 
 		logger.info("TRY TO FIND VALUE AT {} INDEX IN {}", index, line);
 		String res = "?";
 		try {
 			res = line.split(SEPARATOR_CHAR)[index].trim();
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			System.err.println("value not found from:" + line + "," + index);
 			e.printStackTrace();
 			throw new PlateLoadingException(
@@ -357,13 +359,13 @@ public class PlateViewerLoaderImpl implements PlateViewerLoader {
 		return res;
 	}
 
-	private Date extractDate(String line, int indexValue) throws PlateLoadingException {
+	private Date extractDate(final String line, final int indexValue) throws PlateLoadingException {
 		logger.info("TRY TO FIND DATE AT {} INDEX IN {}", indexValue, line);
 
 		try {
-			String date = line.split(SEPARATOR_CHAR)[indexValue];
+			final String date = line.split(SEPARATOR_CHAR)[indexValue];
 			return date != null && !date.trim().equals("_") ? dateFormatter.parse(date) : null;
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			System.err.println("date not found from:" + line + "," + indexValue);
 			e.printStackTrace();
 			throw new PlateLoadingException("A date is not correctly formated :\n\n-Index:" + indexValue + "\n\n-Line:"
@@ -371,13 +373,13 @@ public class PlateViewerLoaderImpl implements PlateViewerLoader {
 		}
 	}
 
-	private int extractIndex(String[] lines, int from, String titleToFind) {
+	private int extractIndex(final String[] lines, final int from, final String titleToFind) {
 		int index = from;
-		boolean found = false;
+		final boolean found = false;
 		while (!found) {
-			String[] checkLine = lines[index].split(SEPARATOR_CHAR);
+			final String[] checkLine = lines[index].split(SEPARATOR_CHAR);
 			if (checkLine.length > 0) {
-				String checkString = checkLine[0];
+				final String checkString = checkLine[0];
 				if (checkString.equals(titleToFind)) {
 					break;
 				} else {
@@ -390,22 +392,22 @@ public class PlateViewerLoaderImpl implements PlateViewerLoader {
 		return index;
 	}
 
-	private Date extractDate(String[] lines, Point indexValue) throws PlateLoadingException {
+	private Date extractDate(final String[] lines, final Point indexValue) throws PlateLoadingException {
 		logger.info("TRY TO FIND DATE AT {} INDEX IN {}", indexValue.x, lines[indexValue.y]);
-		String date = lines[indexValue.y].split(SEPARATOR_CHAR)[indexValue.x];
+		final String date = lines[indexValue.y].split(SEPARATOR_CHAR)[indexValue.x];
 		try {
 			return date != null ? dateFormatter.parse(date) : new Date();
-		} catch (ParseException e) {
+		} catch (final ParseException e) {
 			throw new PlateLoadingException("The date :" + date + " must follow the pattern:" + DATE_PATTERN);
 
 		}
 	}
 
-	private String extractValue(String[] lines, Point indexValue) throws PlateLoadingException {
+	private String extractValue(final String[] lines, final Point indexValue) throws PlateLoadingException {
 		logger.info("TRY TO FIND VALUE AT {} INDEX IN {}", indexValue.x, lines[indexValue.y]);
 		try {
 			return lines[indexValue.y].split(SEPARATOR_CHAR)[indexValue.x];
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			throw new PlateLoadingException(
 					"Check the line is not emprty because a value is requested but not found at the line:\n\n-line:"
 							+ (int) (1 + indexValue.getY()) + "\n\n-item:" + (int) indexValue.getX());

@@ -15,7 +15,7 @@
                <content>
                   <HBox alignment="CENTER">
                      <children>
-                        <VBox style="-fx-background-color: white;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="50.0" fx:id="xpPane">
+                        <VBox style="-fx-background-color: white;-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 10, 0, 0, 0);" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="50.0" fx:id="xpPane">
                            <children>
                               <Label text="Date" fx:id="xpDate">
                                  <font>
@@ -43,9 +43,9 @@
          <top>
             <HBox>
                <children>
-                  <HBox alignment="CENTER_LEFT" HBox.hgrow="ALWAYS">
+                  <HBox alignment="CENTER_LEFT" style="-fx-background-color: #f2f2f2;" HBox.hgrow="ALWAYS">
                      <children>
-                        <Button minHeight="50.0" minWidth="150.0" mnemonicParsing="false" onAction="#onChangeFontClicked" text="Edit Treatment Font" textAlignment="CENTER">
+                        <Button fx:id="editTreatmentButton" minHeight="50.0" minWidth="150.0" mnemonicParsing="false" onAction="#onChangeFontClicked" text="Edit Treatment Font" textAlignment="CENTER">
                            <HBox.margin>
                               <Insets left="5.0" right="5.0" />
                            </HBox.margin>
@@ -53,7 +53,7 @@
                               <Insets />
                            </opaqueInsets>
                         </Button>
-                        <Button alignment="CENTER" minHeight="50.0" minWidth="150.0" mnemonicParsing="false" onAction="#onChangeSampleFontClicked" text="Edit Sample Font" textAlignment="CENTER">
+                        <Button fx:id="editSampleButton" alignment="CENTER" minHeight="50.0" minWidth="150.0" mnemonicParsing="false" onAction="#onChangeSampleFontClicked" text="Edit Sample Font" textAlignment="CENTER">
                            <HBox.margin>
                               <Insets right="5.0" />
                            </HBox.margin>
@@ -73,9 +73,9 @@
                         </GridPane>
                      </children>
                   </HBox>
-                  <HBox alignment="TOP_RIGHT" prefHeight="70.0" spacing="5.0" BorderPane.alignment="CENTER">
+                  <HBox alignment="TOP_RIGHT" prefHeight="70.0" spacing="5.0" style="-fx-background-color: #f2f2f2;" BorderPane.alignment="CENTER">
                      <children>
-                        <Button alignment="CENTER" contentDisplay="CENTER" maxWidth="100.0" minHeight="50.0" minWidth="150.0" mnemonicParsing="false" onAction="#onPrintClicked" prefWidth="100.0" text="Print" textAlignment="CENTER" />
+                        <Button fx:id="printButton" alignment="CENTER" maxWidth="100.0" minHeight="50.0" minWidth="150.0" mnemonicParsing="false" onAction="#onPrintClicked" prefWidth="100.0" text="Print" textAlignment="CENTER" />
                      </children>
                      <padding>
                         <Insets left="10.0" right="10.0" top="10.0" />

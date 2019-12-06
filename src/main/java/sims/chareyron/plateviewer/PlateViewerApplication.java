@@ -28,21 +28,19 @@ public class PlateViewerApplication extends AbstractJavaFxSpring {
 	public static Stage MAIN_STAGE;
 	Stage stage;
 
-	public static void main(String[] args) {
+	public static void main(final String[] args) {
 		launchApp(PlateViewerApplication.class, args);
 	}
 
 	@Override
-	public void start(Stage stage) throws Exception {
+	public void start(final Stage stage) throws Exception {
 		MAIN_STAGE = stage;
-
 		stage.getIcons().add(new Image(SplashScreen.class.getResource("plate-viewer.jpg").toExternalForm()));
 		placeManager.setStage(stage);
 		placeManager.revealDefaultPlace();
 		placeManager.init();
 		afterLoadingSpring();
 		stage.getScene().getStylesheets().add("style.css");
-
 	}
 
 	@Override
@@ -51,21 +49,21 @@ public class PlateViewerApplication extends AbstractJavaFxSpring {
 
 			@Override
 			public void run() {
-				FXMLLoader loader = new FXMLLoader(SplashScreen.class.getResource("SplashScreen.fxml"), null);
+				final FXMLLoader loader = new FXMLLoader(SplashScreen.class.getResource("SplashScreen.fxml"), null);
 				try {
-					Node splashScreen = loader.load();
-					FadeTransition ft = new FadeTransition(Duration.millis(1000), splashScreen);
+					final Node splashScreen = loader.load();
+					final FadeTransition ft = new FadeTransition(Duration.millis(1000), splashScreen);
 					ft.setFromValue(0.0);
 					ft.setToValue(1.0);
 					ft.play();
-					Scene scene = new Scene((Parent) splashScreen);
+					final Scene scene = new Scene((Parent) splashScreen);
 					stage = new Stage();
 					stage.setScene(scene);
 					stage.setResizable(true);
 					stage.centerOnScreen();
 					stage.initStyle(StageStyle.UNDECORATED);
 					stage.show();
-				} catch (IOException e) {
+				} catch (final IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}

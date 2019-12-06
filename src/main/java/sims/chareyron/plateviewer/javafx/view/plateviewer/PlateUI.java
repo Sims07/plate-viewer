@@ -160,8 +160,7 @@ public class PlateUI extends Pane {
 	}
 
 	private Well findWellByIndex(final List<Well> wells, final int index) {
-		System.out.println("Search well at:" + index);
-		return wells.stream().filter(w -> w.getIndex() == (index + 1)).findFirst().get();
+		return wells.parallelStream().filter(w -> w.getIndex() == (index + 1)).findFirst().get();
 	}
 
 	public Font getTtFont() {
